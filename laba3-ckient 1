@@ -1,0 +1,34 @@
+import socket
+import threading
+import os
+
+UDP_MAX_SIZE = 65535
+
+
+def listen(s: socket.socket):
+    while True:
+        msg = s.recv(UDP_MAX_SIZE)
+        print('\r\r' + msg.decode('utf-8') + '\n' + f'you: ', end="")
+
+
+def connect():
+    host = "192.168.31.42"
+    port = 3030
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    s.connect((host, port))
+    server = (host, port)
+
+    threading.Thread(target=listen, args=(s,), daemon=True).start()
+
+    s.sendto("__join".encode("utf-8"), server)
+
+    while True:
+        msg = input(f'you: ')
+        s.send(msg.encode("utf-8"))
+
+
+if __name__ == '__main__':
+    os.system('cls')
+    print('Welcome to chat')
+    connect()
